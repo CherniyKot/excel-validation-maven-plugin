@@ -31,3 +31,16 @@
       </plugin>
     </plugins>
 ```
+Доступные условия:
+`empty`
+`not_empty`
+`equal`
+`not_equal`
+`less`
+`greater`
+`less_equal`
+`greater_equal`
+`not_less`
+`not_greater`
+`not_less_equal`
+`not_greater_equal`
