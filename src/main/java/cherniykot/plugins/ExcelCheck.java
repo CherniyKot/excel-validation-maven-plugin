@@ -10,36 +10,42 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 
 @Mojo(name = "check", defaultPhase = LifecyclePhase.VALIDATE)
 public class ExcelCheck extends AbstractMojo {
-    @Parameter(property = "spreadsheetId")
+    @Parameter(property = "spreadsheetId", required = true)
     private String spreadsheetId;
+    @Parameter(property = "credentials", required = true)
+    private String credentials;
     @Parameter(property = "conditions")
     private List<Condition> conditions;
+    
     
     private boolean error = false;
     
     public void execute() throws MojoExecutionException {
+        if(conditions==null || conditions.isEmpty()) {return;}
+        
         NetHttpTransport HTTP_TRANSPORT = null;
         try {
             HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         }
         catch (Exception e) {
-            throw new MojoExecutionException("Something went wrong with Internet connection", e);
+            throw new MojoExecutionException(e.getMessage());
         }
         Sheets service = null;
         
         try {
-            service = new Sheets.Builder(HTTP_TRANSPORT, GoogleUtil.JSON_FACTORY, GoogleUtil.getCredentials(HTTP_TRANSPORT))
+            service = new Sheets.Builder(HTTP_TRANSPORT, GoogleUtil.JSON_FACTORY, GoogleUtil.getCredentials(HTTP_TRANSPORT, credentials))
                     .setApplicationName(GoogleUtil.APPLICATION_NAME)
                     .build();
         }
         catch (IOException e) {
-            throw new MojoExecutionException("Something went wrong in your life", e);
+            throw new MojoExecutionException(e.getMessage());
         }
         
         for (Condition condition : conditions) {
